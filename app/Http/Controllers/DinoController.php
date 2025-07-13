@@ -9,23 +9,25 @@ class DinoController extends Controller
 {
     public function showEra($era)
     {
-        $urls = [
-            'triassic' => 'https://dhikav0.github.io/dino-API/triassic/triassic_dino.json',
-            'jurassic' => 'https://dhikav0.github.io/dino-API/jurassic/jurassic_dino.json',
-            'cretaceous' => 'https://dhikav0.github.io/dino-API/cretaceous/cretaceous_dino.json',
+    $urls = [
+        'triassic' => 'https://dhikav0.github.io/dino-API/triassic/triassic_dino.json',
+        'jurassic' => 'https://dhikav0.github.io/dino-API/jurassic/jurassic_dino.json',
+        'cretaceous' => 'https://dhikav0.github.io/dino-API/cretaceous/cretaceous_dino.json',
         ];
 
-        if (!array_key_exists($era, $urls)) {
+        if (!isset($urls[$era])) {
             abort(404);
         }
 
-         $response = Http::withoutVerifying()->get($urls[$era]);
+        $response = Http::withoutVerifying()->get($urls[$era]);
+        $jsonData = $response->json();
 
-    $dinos = $response->successful() ? $response->json() : [];
+        $key = $era . '_dinosaurs';
+        $dinos = $jsonData[$key] ?? [];
 
-    return view('era', [
-        'era' => ucfirst($era),
-        'dinos' => $dinos
-    ]);
+        return view('era', [
+            'era' => ucfirst($era),
+            'dinos' => $dinos
+        ]);
     }
 }
